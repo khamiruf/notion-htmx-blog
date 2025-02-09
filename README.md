@@ -46,25 +46,21 @@ go run main.go
 
 
 ## Project Structure
-notion-htmx-blog/
+```
+.
 ├── cmd/
-│ └── server/ # Main application entry point
+│   └── server/        # Main application entry point
 ├── internal/
-│ ├── handlers/ # HTTP handlers
-│ └── notion/ # Notion API integration
+│   ├── handlers/      # HTTP handlers
+│   └── notion/        # Notion API integration
 ├── web/
-│ ├── templates/ # HTML templates
-│ └── static/ # Static assets
-│ ├── css/ # Compiled CSS
-│ └── js/ # JavaScript files
-└── .env # Environment variables
+│   ├── templates/     # HTML templates
+│   └── static/        # Static assets
+│       ├── css/       # Compiled CSS
+│       └── js/        # JavaScript files
+└── .env              # Environment variables
+```
 
 ## Development
 
-- Run `make dev` to start the development server with hot reload
-- Run `make build` to create a production build
-- Run `make test` to run tests
-
-## License
-
-MIT License
+- Run `make dev`
