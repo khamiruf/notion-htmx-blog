@@ -1,0 +1,18 @@
+{{ define "header" }}
+<header class="border-b border-gray-200">
+    <nav class="flex justify-between items-center py-4">
+        <a href="/" hx-get="/" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+            class="text-2xl font-bold text-gray-800">Book Reviews</a>
+        <div class="flex items-center space-x-4">
+            <a href="/" hx-get="/" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+                class="text-gray-600 hover:text-gray-900">Home</a>
+            <a href="/books" hx-get="/books" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+                class="text-gray-600 hover:text-gray-900">Books</a>
+            <a href="/articles" hx-get="/articles" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+                class="text-gray-600 hover:text-gray-900">Articles</a>
+            <a href="/about" hx-get="/about" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+                class="text-gray-600 hover:text-gray-900">About</a>
+        </div>
+    </nav>
+</header>
+{{ end }}

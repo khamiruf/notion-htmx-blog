@@ -1,0 +1,31 @@
+{{ define "base" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Review Blog</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link href="/static/css/output.css" rel="stylesheet">
+    <script>
+        window.onload = function () {
+            if (typeof htmx !== 'undefined') {
+                htmx.config.defaultSwapStyle = 'innerHTML';
+            }
+        };
+    </script>
+</head>
+
+<body class="min-h-screen bg-gray-50" hx-boost="true">
+    <div class="container mx-auto px-4 py-8">
+        {{ template "header" . }}
+        <main id="main" class="prose-custom my-8">
+            {{ template "content" . }}
+        </main>
+        {{ template "footer" . }}
+    </div>
+</body>
+
+</html>
+{{ end }}

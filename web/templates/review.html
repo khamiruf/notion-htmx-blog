@@ -1,0 +1,26 @@
+{{ define "review_content" }}
+<div class="max-w-4xl mx-auto">
+    <article class="bg-white p-8 rounded-lg shadow-sm">
+        {{ if .Review.CoverImage }}
+        <img src="{{ .Review.CoverImage }}" alt="{{ .Review.Title }}" class="w-full h-64 object-cover rounded-lg mb-8">
+        {{ end }}
+        <h1 class="text-4xl font-bold mb-4">{{ .Review.Title }}</h1>
+        <div class="flex items-center space-x-4 mb-6">
+            <p class="text-gray-600">By {{ .Review.Author }}</p>
+            <time class="text-gray-500">{{ .Review.Date.Format "January 2, 2006" }}</time>
+            <div class="flex items-center space-x-2">
+                {{ range .Review.Tags }}
+                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded">{{ . }}</span>
+                {{ end }}
+            </div>
+        </div>
+        <div class="prose prose-lg">
+            <p>{{ .Review.Description }}</p>
+        </div>
+        <div class="mt-8">
+            <a href="/" hx-get="/" hx-push-url="true" hx-target="#main" hx-swap="innerHTML" class="btn btn-primary">Back
+                to Reviews</a>
+        </div>
+    </article>
+</div>
+{{ end }}

@@ -1,0 +1,13 @@
+{
+  "name": "notion-htmx-blog",
+  "version": "1.0.0",
+  "description": "A book review blog using Go, HTMX, and Notion as CMS",
+  "scripts": {
+    "dev": "tailwindcss -i ./web/static/css/input.css -o ./web/static/css/output.css --watch",
+    "build": "tailwindcss -i ./web/static/css/input.css -o ./web/static/css/output.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10",
+    "tailwindcss": "^3.4.1"
+  }
+}
