@@ -26,6 +26,7 @@ func (h *ReviewHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/", h.handleHome())
 	mux.HandleFunc("/books", h.handleBooks())
 	mux.HandleFunc("/articles", h.handleArticles())
+	mux.HandleFunc("/food", h.handleFood())
 	mux.HandleFunc("/reviews/", h.handleGetReview())
 }
 
@@ -36,37 +37,22 @@ func (h *ReviewHandler) handleHome() http.HandlerFunc {
 			return
 		}
 
-		log.Printf("Fetching reviews from service...")
-		reviews, err := h.service.ListReviews(10, "")
-		if err != nil {
-			log.Printf("Error fetching reviews: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		log.Printf("Got %d reviews from service", len(reviews))
-		for i, review := range reviews {
-			log.Printf("Review %d: ID=%s, Title=%s, Author=%s, Published=%v, Slug=%s, Description=%s, Tags=%v",
-				i+1, review.ID, review.Title, review.Author, review.Published, review.Slug, review.Description, review.Tags)
-		}
-
 		data := map[string]interface{}{
-			"Year":    time.Now().Year(),
-			"Reviews": reviews,
+			"Year":     time.Now().Year(),
+			"Template": "about",
 		}
 
-		log.Printf("Executing template with data: %+v", data)
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 		// Check if this is an HTMX request
 		if r.Header.Get("HX-Request") == "true" {
-			log.Printf("HTMX request detected, rendering content template")
-			if err := h.tmpl.ExecuteTemplate(w, "content", data); err != nil {
-				log.Printf("Error executing content template: %v", err)
+			log.Printf("HTMX request detected, rendering about template")
+			if err := h.tmpl.ExecuteTemplate(w, "about", data); err != nil {
+				log.Printf("Error executing about template: %v", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-			log.Printf("Content template rendered successfully")
+			log.Printf("About template rendered successfully")
 		} else {
 			log.Printf("Regular request detected, rendering base template")
 			if err := h.tmpl.ExecuteTemplate(w, "base", data); err != nil {
@@ -82,7 +68,7 @@ func (h *ReviewHandler) handleHome() http.HandlerFunc {
 func (h *ReviewHandler) handleBooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Fetching book reviews...")
-		reviews, err := h.service.ListReviews(10, domain.TagBook)
+		reviews, err := h.service.ListReviews(10, []domain.Tag{domain.TagBook})
 		if err != nil {
 			log.Printf("Error fetching book reviews: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -122,7 +108,7 @@ func (h *ReviewHandler) handleBooks() http.HandlerFunc {
 func (h *ReviewHandler) handleArticles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Fetching article reviews...")
-		reviews, err := h.service.ListReviews(10, domain.TagArticle)
+		reviews, err := h.service.ListReviews(10, []domain.Tag{domain.TagArticle})
 		if err != nil {
 			log.Printf("Error fetching article reviews: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -143,6 +129,64 @@ func (h *ReviewHandler) handleArticles() http.HandlerFunc {
 			log.Printf("HTMX request detected, rendering content template")
 			if err := h.tmpl.ExecuteTemplate(w, "content", data); err != nil {
 				log.Printf("Error executing content template: %v", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			log.Printf("Content template rendered successfully")
+		} else {
+			log.Printf("Regular request detected, rendering base template")
+			if err := h.tmpl.ExecuteTemplate(w, "base", data); err != nil {
+				log.Printf("Error executing base template: %v", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			log.Printf("Base template rendered successfully")
+		}
+	}
+}
+
+func (h *ReviewHandler) handleFood() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Fetching food reviews...")
+
+		// Get cuisine from query parameter
+		cuisine := r.URL.Query().Get("cuisine")
+		tags := []domain.Tag{domain.TagFood}
+
+		// Add cuisine tag if specified
+		if cuisine != "" {
+			tags = append(tags, domain.Tag(cuisine))
+		}
+
+		reviews, err := h.service.ListReviews(10, tags)
+		if err != nil {
+			log.Printf("Error fetching food reviews: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		log.Printf("Got %d food reviews", len(reviews))
+		data := map[string]interface{}{
+			"Year":           time.Now().Year(),
+			"Reviews":        reviews,
+			"Type":           "Food",
+			"CurrentCuisine": cuisine,
+			"CuisineTags": []string{
+				"thai",
+				"italian",
+				"japanese",
+				"chinese",
+				"indian",
+			},
+		}
+
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		// Check if this is an HTMX request
+		if r.Header.Get("HX-Request") == "true" {
+			log.Printf("HTMX request detected, rendering food template")
+			if err := h.tmpl.ExecuteTemplate(w, "content", data); err != nil {
+				log.Printf("Error executing food template: %v", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}

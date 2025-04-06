@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"notion-htmx-blog/internal/config"
+	"notion-htmx-blog/internal/domain"
 	"notion-htmx-blog/internal/handler"
 	"notion-htmx-blog/internal/repository"
 	"notion-htmx-blog/internal/service"
@@ -35,6 +37,20 @@ func main() {
 	funcMap := template.FuncMap{
 		"iterate": func(count int) []struct{} {
 			return make([]struct{}, count)
+		},
+		"title": func(s string) string {
+			if len(s) == 0 {
+				return s
+			}
+			return strings.ToUpper(string(s[0])) + s[1:]
+		},
+		"hasTag": func(tags []domain.Tag, tag string) bool {
+			for _, t := range tags {
+				if string(t) == tag {
+					return true
+				}
+			}
+			return false
 		},
 	}
 

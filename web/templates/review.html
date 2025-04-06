@@ -14,12 +14,31 @@
                 {{ end }}
             </div>
         </div>
+        {{ if .Review.URL }}
+        <div class="mb-6">
+            <a href="{{ .Review.URL }}" target="_blank" rel="noopener noreferrer"
+                class="text-blue-600 hover:text-blue-800">
+                View on Google Maps
+            </a>
+        </div>
+        {{ end }}
         <div class="prose prose-lg">
             <p>{{ .Review.Description }}</p>
         </div>
         <div class="mt-8">
+            {{ if hasTag .Review.Tags "food" }}
+            <a href="/food" hx-get="/food" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+                class="btn btn-primary">Back to Food Reviews</a>
+            {{ else if hasTag .Review.Tags "book" }}
+            <a href="/books" hx-get="/books" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+                class="btn btn-primary">Back to Book Reviews</a>
+            {{ else if hasTag .Review.Tags "article" }}
+            <a href="/articles" hx-get="/articles" hx-push-url="true" hx-target="#main" hx-swap="innerHTML"
+                class="btn btn-primary">Back to Article Reviews</a>
+            {{ else }}
             <a href="/" hx-get="/" hx-push-url="true" hx-target="#main" hx-swap="innerHTML" class="btn btn-primary">Back
                 to Reviews</a>
+            {{ end }}
         </div>
     </article>
 </div>

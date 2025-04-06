@@ -14,16 +14,28 @@
             <img src="{{ .CoverImage }}" alt="{{ .Title }}" class="w-full h-48 object-cover rounded-lg mb-4">
             {{ end }}
             <h2 class="text-xl font-semibold mb-2">{{ .Title }}</h2>
+            {{ if .Author }}
             <p class="text-gray-600 mb-4">By {{ .Author }}</p>
+            {{ end }}
+            <p class="text-gray-700 mb-4 line-clamp-3">{{ .Description }}</p>
             <div class="flex flex-wrap items-center gap-2 mb-4">
                 <span class="text-sm text-gray-500">{{ .Date.Format "January 2, 2006" }}</span>
                 {{ range .Tags }}
                 <span class="px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded">{{ . }}</span>
                 {{ end }}
             </div>
-            <p class="text-gray-700 mb-4 line-clamp-3">{{ .Description }}</p>
-            <a href="/reviews/{{ .Slug }}" hx-get="/reviews/{{ .Slug }}" hx-push-url="true" hx-target="#main"
-                hx-swap="innerHTML" class="btn btn-primary">Read Review</a>
+            <div class="flex space-y-2" style="flex-direction: column;">
+                {{ if .URL }}
+                <a href="{{ .URL }}" target="_blank" rel="noopener noreferrer"
+                    class="block text-blue-600 hover:text-blue-800 text-sm" style="width: fit-content;">
+                    View on Google Maps
+                </a>
+                {{ end }}
+                <a href="/reviews/{{ .Slug }}" hx-get="/reviews/{{ .Slug }}" hx-push-url="true" hx-target="#main"
+                    hx-swap="innerHTML" class="block btn btn-primary" style="width: fit-content;">
+                    Read Review
+                </a>
+            </div>
         </article>
         {{ else }}
         <div class="col-span-2 text-center py-8">
