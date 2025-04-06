@@ -14,11 +14,11 @@ func NewReviewService(repo domain.ReviewRepository) *ReviewService {
 	}
 }
 
-func (s *ReviewService) ListReviews(limit int, tag domain.Tag) ([]domain.Review, error) {
+func (s *ReviewService) ListReviews(limit int, tags []domain.Tag) ([]domain.Review, error) {
 	if limit <= 0 {
 		limit = 10 // Default limit
 	}
-	return s.repo.ListReviews(limit, tag)
+	return s.repo.ListReviews(limit, tags)
 }
 
 func (s *ReviewService) GetReview(id string) (*domain.Review, error) {

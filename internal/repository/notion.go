@@ -23,7 +23,7 @@ func NewNotionRepository(apiKey, dbID string) *NotionRepository {
 	}
 }
 
-func (r *NotionRepository) ListReviews(limit int, tag domain.Tag) ([]domain.Review, error) {
+func (r *NotionRepository) ListReviews(limit int, tags []domain.Tag) ([]domain.Review, error) {
 	query := &notionapi.DatabaseQueryRequest{
 		PageSize: limit,
 		Sorts: []notionapi.SortObject{
@@ -34,17 +34,39 @@ func (r *NotionRepository) ListReviews(limit int, tag domain.Tag) ([]domain.Revi
 		},
 	}
 
-	// If tag is specified, filter by tag
-	if tag != "" {
+	// If tags are specified, filter by tags
+	if len(tags) > 0 {
+		// Create a filter for the first tag
 		query.Filter = &notionapi.PropertyFilter{
 			Property: "Tag",
 			MultiSelect: &notionapi.MultiSelectFilterCondition{
-				Contains: string(tag),
+				Contains: string(tags[0]),
 			},
 		}
+
+		// For additional tags, we'll need to filter the results in memory
+		// since Notion's API doesn't support complex AND conditions for multi-select
+		result, err := r.client.Database.Query(context.Background(), notionapi.DatabaseID(r.dbID), query)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query Notion database: %w", err)
+		}
+
+		reviews := make([]domain.Review, 0, len(result.Results))
+		for _, page := range result.Results {
+			review, err := r.mapPageToReview(&page)
+			if err != nil {
+				return nil, err
+			}
+			// Only include published reviews that have all the specified tags
+			if review.Published && hasAllTags(review.Tags, tags) {
+				reviews = append(reviews, *review)
+			}
+		}
+
+		return reviews, nil
 	}
 
-	log.Printf("Querying Notion with filter: %+v", query.Filter)
+	// If no tags specified, just query without filter
 	result, err := r.client.Database.Query(context.Background(), notionapi.DatabaseID(r.dbID), query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query Notion database: %w", err)
@@ -63,6 +85,21 @@ func (r *NotionRepository) ListReviews(limit int, tag domain.Tag) ([]domain.Revi
 	}
 
 	return reviews, nil
+}
+
+// Helper function to check if a review has all the specified tags
+func hasAllTags(reviewTags []domain.Tag, requiredTags []domain.Tag) bool {
+	tagMap := make(map[domain.Tag]bool)
+	for _, tag := range reviewTags {
+		tagMap[tag] = true
+	}
+
+	for _, requiredTag := range requiredTags {
+		if !tagMap[requiredTag] {
+			return false
+		}
+	}
+	return true
 }
 
 func (r *NotionRepository) GetReview(id string) (*domain.Review, error) {
@@ -142,6 +179,17 @@ func (r *NotionRepository) mapPageToReview(page *notionapi.Page) (*domain.Review
 		}
 	} else {
 		log.Printf("Cover Image property not found")
+	}
+
+	if prop, ok := page.Properties["URL"]; ok {
+		if url, ok := prop.(*notionapi.URLProperty); ok {
+			review.URL = url.URL
+			log.Printf("Found URL: %s", review.URL)
+		} else {
+			log.Printf("URL property is not in expected format: %T", prop)
+		}
+	} else {
+		log.Printf("URL property not found")
 	}
 
 	if prop, ok := page.Properties["Slug"]; ok {
