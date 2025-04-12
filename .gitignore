@@ -1,4 +1,4 @@
-# Go
+# Go specific
 *.exe
 *.exe~
 *.dll
@@ -8,19 +8,32 @@
 *.out
 go.work
 
-# Node
-node_modules/
-dist/
-
-# Environment variables
-.env
-
-# IDE
+# IDE specific
 .idea/
 .vscode/
+*.swp
+*.swo
 
-# OS
+# OS specific
 .DS_Store
+Thumbs.db
 
-# Build
+# Project specific
+.env
+.env.local
+.env.*.local
+fly.toml
+*.log
+
+# Build output
+dist/
 build/
+bin/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Coverage
+coverage.txt
+*.cover
