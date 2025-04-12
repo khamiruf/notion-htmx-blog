@@ -75,7 +75,7 @@ func main() {
 
 	// Start server
 	log.Printf("Server starting on :%s", cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, mux); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:"+cfg.Port, mux); err != nil {
 		log.Fatal(err)
 	}
 }
