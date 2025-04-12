@@ -6,7 +6,7 @@ module.exports = {
             typography: {
                 DEFAULT: {
                     css: {
-                        maxWidth: '65ch',
+                        maxWidth: '100ch',
                         color: '#333',
                         strong: {
                             color: '#333',
