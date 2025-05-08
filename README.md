@@ -1,3 +1,5 @@
+Currently serving https://khamiruf.com/
+
 # Notion HTMX Blog
 
 A modern blog platform that uses Notion as a CMS, powered by Go and HTMX for dynamic frontend updates.
